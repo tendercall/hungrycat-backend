@@ -43,6 +43,7 @@ func Initdb() {
 	// customer_id VARCHAR(256) UNIQUE NOT NULL,
 	// profile_image TEXT,
 	// address VARCHAR(256),
+	// location VARCHAR(256),
 	// created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	// )`
 
