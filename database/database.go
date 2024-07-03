@@ -41,7 +41,7 @@ func Initdb() {
 	email VARCHAR(256),
 	password VARCHAR(256),
 	phone_number INTEGER,
-	customer_id VARCHAR(256),
+	customer_id VARCHAR(256) UNIQUE NOT NULL,
 	profile_image TEXT,
 	address VARCHAR(256),
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
