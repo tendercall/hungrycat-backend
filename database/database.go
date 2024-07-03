@@ -6,9 +6,8 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
+	"hungerycat-backend.com/main/services/repository"
 )
-
-var DB *sql.DB
 
 func Initdb() {
 	// PostgreSQL connection parameters
@@ -25,31 +24,31 @@ func Initdb() {
 
 	// Attempt to connect to the database
 	var err error
-	DB, err = sql.Open("postgres", connectionString)
+	repository.DB, err = sql.Open("postgres", connectionString)
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 	}
 
-	if err = DB.Ping(); err != nil {
+	if err = repository.DB.Ping(); err != nil {
 		log.Fatalf("Error connecting to the database: %v", err)
 	}
 	fmt.Println("Database connection established")
 
-	createTable := `CREATE TABLE IF NOT EXISTS customer (
-	id SERIAL PRIMARY KEY,
-	name VARCHAR(256),
-	email VARCHAR(256),
-	password VARCHAR(256),
-	phone_number INTEGER,
-	customer_id VARCHAR(256) UNIQUE NOT NULL,
-	profile_image TEXT,
-	address VARCHAR(256),
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	)`
+	// createTable := `CREATE TABLE IF NOT EXISTS admin (
+	// id SERIAL PRIMARY KEY,
+	// username VARCHAR(256),
+	// email VARCHAR(256),
+	// password VARCHAR(256),
+	// phone_number VARCHAR(256),
+	// admin_id VARCHAR(256) UNIQUE NOT NULL,
+	// profile_image TEXT,
+	// created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	// last_signin TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	// )`
 
-	_, err = DB.Exec(createTable)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Table created successfully")
+	// _, err = repository.DB.Exec(createTable)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println("Table created successfully")
 }
