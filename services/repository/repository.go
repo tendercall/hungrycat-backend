@@ -57,3 +57,16 @@ func GetAdmin() ([]models.Admin, error) {
 
 	return admins, nil
 }
+
+func CheckEmailAndPassword(email, password string) (bool, error) {
+	var exists bool
+	query := "SELECT EXISTS(SELECT 1 FROM admin WHERE email = $1 AND password = $2);"
+	err := DB.QueryRow(query, email, password).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	fmt.Println("Checking email and password")
+
+	return exists, nil
+}

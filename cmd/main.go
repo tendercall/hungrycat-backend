@@ -14,5 +14,8 @@ func main() {
 	//Admin router
 	http.Handle("/admin", middleware.AuthMiddleware(http.HandlerFunc(handler.AdminHandler)))
 
+	//sign in router
+	http.Handle("/signin", middleware.AuthMiddleware(http.HandlerFunc(handler.CheckEmailAndPasswordHandler)))
+
 	http.ListenAndServe(":8080", nil)
 }

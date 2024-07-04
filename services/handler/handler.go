@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"hungerycat-backend.com/main/services/models"
@@ -48,4 +49,33 @@ func GetAdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(admin)
+}
+
+func CheckEmailAndPasswordHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var admin models.Admin
+	err := json.NewDecoder(r.Body).Decode(&admin)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	exists, err := repository.CheckEmailAndPassword(admin.Email, admin.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if exists {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, "Admin exists")
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(w, "Admin not found")
+	}
 }
