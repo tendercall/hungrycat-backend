@@ -34,17 +34,19 @@ func Initdb() {
 	}
 	fmt.Println("Database connection established")
 
-	// createTable := `CREATE TABLE IF NOT EXISTS customer (
+	// createTable := `CREATE TABLE IF NOT EXISTS food (
 	// id SERIAL PRIMARY KEY,
 	// name VARCHAR(256),
-	// email VARCHAR(256),
-	// password VARCHAR(256),
-	// phone_number VARCHAR(256),
-	// customer_id VARCHAR(256) UNIQUE NOT NULL,
-	// profile_image TEXT,
-	// address VARCHAR(256),
-	// location VARCHAR(256),
-	// created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	// description VARCHAR(256),
+	// category VARCHAR(256),
+	// product_id VARCHAR(256) UNIQUE NOT NULL,
+	// price INTEGER,
+	// stock BOOLEAN,
+	// image VARCHAR(256),
+	// hotel_name VARCHAR(256),
+	// hotel_id VARCHAR(256) UNIQUE NOT NULL,
+	// created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	// updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	// )`
 
 	// _, err = repository.DB.Exec(createTable)

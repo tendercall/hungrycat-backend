@@ -70,3 +70,51 @@ func CheckEmailAndPassword(email, password string) (bool, error) {
 
 	return exists, nil
 }
+
+// Food GET And POST
+func PostFood(name, description, category, product_id, image, hotel_name, hotel_id string, price int, stock bool, created_date, updated_date time.Time) (uint, error) {
+	var id uint
+
+	currentTime := time.Now()
+
+	// Insert into Food table
+	err := DB.QueryRow(
+		"INSERT INTO food(name, description, category, product_id, price, stock, image, hotel_name, hotel_id, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8 ,$9, $10, $11) RETURNING id",
+		name, description, category, product_id, price, stock, image, hotel_name, hotel_id, currentTime, currentTime).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("Post food Successfully")
+
+	return id, nil
+}
+
+func GetFood() ([]models.Food, error) {
+	// implement get all orders logic here
+	query := "SELECT id, name, description, category, product_id, price, stock, image, hotel_name, hotel_id, created_date, updated_date FROM food"
+	rows, err := DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var foods []models.Food
+
+	for rows.Next() {
+		var food models.Food
+		if err := rows.Scan(&food.ID, &food.Name, &food.Description, &food.Category, &food.ProductId, &food.Price, &food.Stock, &food.Image, &food.HotelName, &food.HotelId, &food.CreatedDate, &food.UpdatedDate); err != nil {
+			return nil, err
+		}
+		foods = append(foods, food)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Get Food Successfully")
+
+	return foods, nil
+}

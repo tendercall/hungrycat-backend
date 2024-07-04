@@ -9,17 +9,19 @@ import (
 	"hungerycat-backend.com/main/services/repository"
 )
 
+//Adin Handler
+
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		GetAdminHandler(w, r)
 	} else if r.Method == http.MethodPost {
-		PostAadminHandler(w, r)
+		PostAdminHandler(w, r)
 	} else {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
 
-func PostAadminHandler(w http.ResponseWriter, r *http.Request) {
+func PostAdminHandler(w http.ResponseWriter, r *http.Request) {
 	var admin models.Admin
 
 	if err := json.NewDecoder(r.Body).Decode(&admin); err != nil {
@@ -78,4 +80,47 @@ func CheckEmailAndPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, "Admin not found")
 	}
+}
+
+// Food Handler
+func FoodHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		GetFoodHandler(w, r)
+	} else if r.Method == http.MethodPost {
+		PostFoodHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostFoodHandler(w http.ResponseWriter, r *http.Request) {
+	var food models.Food
+
+	if err := json.NewDecoder(r.Body).Decode(&food); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := repository.PostFood(food.Name, food.Description, food.Category, food.ProductId, food.Image, food.HotelName, food.HotelId, food.Price, food.Stock, food.CreatedDate, food.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	food.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(food)
+}
+
+func GetFoodHandler(w http.ResponseWriter, r *http.Request) {
+
+	food, err := repository.GetFood()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(food)
 }
