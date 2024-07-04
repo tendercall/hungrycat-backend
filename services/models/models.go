@@ -28,3 +28,22 @@ type Food struct {
 	CreatedDate time.Time `json:"created_date"`
 	UpdatedDate time.Time `json:"updated_date"`
 }
+
+type Restaurant struct {
+	ID           uint      `json:"id"`
+	HotelId      string    `json:"hotel_id"`
+	HotelName    string    `json:"Hotel_name"`
+	Description  string    `json:"description"`
+	Address      string    `json:"address"`
+	Location     string    `json:"location"`
+	PhoneNumber  string    `json:"phone_number"`
+	Email        string    `json:"email"`
+	Website      string    `json:"website"`
+	Menu         string    `json:"menu"`
+	ProfileImage string    `json:"profile_image"`
+	OpenTime     string    `json:"open_time"`
+	CloseTime    string    `json:"close_time"`
+	Ratings      int       `json:"ratings"`
+	CreatedDate  time.Time `json:"created_date"`
+	UpdatedDate  time.Time `json:"updated_date"`
+}

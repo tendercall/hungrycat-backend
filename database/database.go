@@ -34,17 +34,21 @@ func Initdb() {
 	}
 	fmt.Println("Database connection established")
 
-	// createTable := `CREATE TABLE IF NOT EXISTS food (
+	// createTable := `CREATE TABLE IF NOT EXISTS restaurant (
 	// id SERIAL PRIMARY KEY,
-	// name VARCHAR(256),
-	// description VARCHAR(256),
-	// category VARCHAR(256),
-	// product_id VARCHAR(256) UNIQUE NOT NULL,
-	// price INTEGER,
-	// stock BOOLEAN,
-	// image VARCHAR(256),
-	// hotel_name VARCHAR(256),
 	// hotel_id VARCHAR(256) UNIQUE NOT NULL,
+	// hotel_name VARCHAR(256),
+	// description VARCHAR(256),
+	// address VARCHAR(256),
+	// location VARCHAR(256),
+	// phone_number VARCHAR(256),
+	// email VARCHAR(256),
+	// website VARCHAR(256),
+	// menu TEXT[],
+	// profile_image VARCHAR(256),
+	// open_time VARCHAR(256),
+	// close_time VARCHAR(256),
+	// ratings INTEGER,
 	// created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	// updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	// )`

@@ -124,3 +124,46 @@ func GetFoodHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(food)
 }
+
+// Restaurant Handler
+func RestaurantHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		GetRestaurantHandler(w, r)
+	} else if r.Method == http.MethodPost {
+		PostRestaurantHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostRestaurantHandler(w http.ResponseWriter, r *http.Request) {
+	var restaurant models.Restaurant
+
+	if err := json.NewDecoder(r.Body).Decode(&restaurant); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := repository.PostRestaurant(restaurant.HotelId, restaurant.HotelName, restaurant.Description, restaurant.Address, restaurant.Location, restaurant.PhoneNumber, restaurant.Email, restaurant.Website, restaurant.Menu, restaurant.ProfileImage, restaurant.OpenTime, restaurant.CloseTime, restaurant.Ratings, restaurant.CreatedDate, restaurant.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	restaurant.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(restaurant)
+}
+
+func GetRestaurantHandler(w http.ResponseWriter, r *http.Request) {
+
+	restaurant, err := repository.GetRestaurant()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(restaurant)
+}

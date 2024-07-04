@@ -118,3 +118,51 @@ func GetFood() ([]models.Food, error) {
 
 	return foods, nil
 }
+
+// Restaurant GET And POST
+func PostRestaurant(hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time string, ratings int, created_date, updated_date time.Time) (uint, error) {
+	var id uint
+
+	currentTime := time.Now()
+
+	// Insert into Food table
+	err := DB.QueryRow(
+		"INSERT INTO restaurant(hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time, ratings, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8 ,$9, $10, $11, $12, $13, $14, $15) RETURNING id",
+		hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time, ratings, currentTime, currentTime).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("Post Restaurant Successfully")
+
+	return id, nil
+}
+
+func GetRestaurant() ([]models.Restaurant, error) {
+	// implement get all orders logic here
+	query := "SELECT id, hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time, ratings, created_date, updated_date FROM restaurant"
+	rows, err := DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var restaurants []models.Restaurant
+
+	for rows.Next() {
+		var restaurant models.Restaurant
+		if err := rows.Scan(&restaurant.ID, &restaurant.HotelId, &restaurant.HotelName, &restaurant.Description, &restaurant.Address, &restaurant.Location, &restaurant.PhoneNumber, &restaurant.Email, &restaurant.Website, &restaurant.Menu, &restaurant.ProfileImage, &restaurant.OpenTime, &restaurant.CloseTime, &restaurant.Ratings, &restaurant.CreatedDate, &restaurant.UpdatedDate); err != nil {
+			return nil, err
+		}
+		restaurants = append(restaurants, restaurant)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Get Restaurants Successfully")
+
+	return restaurants, nil
+}
