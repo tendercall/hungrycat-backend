@@ -58,6 +58,28 @@ func GetAdmin() ([]models.Admin, error) {
 	return admins, nil
 }
 
+func PutAdmin(id uint, username, email, password, phone_number, admin_id, profile_image string, last_signin time.Time) error {
+
+	// implement update logic here
+	_, err := DB.Exec(
+		"UPDATE admin SET id=$1, username=$2, email=$3, password=$4, phone_number=$5, profile_image=$6, last_signin=$7 WHERE admin_id=$8",
+		id, username, email, password, phone_number, profile_image, time.Now(), admin_id)
+
+	fmt.Println("Update Admin Successfully")
+
+	return err
+}
+
+func DeleteAdmin(admin_id string) error {
+
+	// implement delete logic here
+	_, err := DB.Exec("DELETE FROM admin WHERE admin_id=$1", admin_id)
+
+	fmt.Println("Delete Admin Successfully")
+
+	return err
+}
+
 func CheckEmailAndPassword(email, password string) (bool, error) {
 	var exists bool
 	query := "SELECT EXISTS(SELECT 1 FROM admin WHERE email = $1 AND password = $2);"
@@ -71,7 +93,7 @@ func CheckEmailAndPassword(email, password string) (bool, error) {
 	return exists, nil
 }
 
-// Food GET And POST
+// Food GET ,POST, PUT and DELETE
 func PostFood(name, description, category, product_id, image, hotel_name, hotel_id string, price int, stock bool, created_date, updated_date time.Time) (uint, error) {
 	var id uint
 
@@ -119,13 +141,35 @@ func GetFood() ([]models.Food, error) {
 	return foods, nil
 }
 
-// Restaurant GET And POST
+func PutFood(id uint, name, description, category, product_id, image, hotel_name, hotel_id string, price int, stock bool, updated_date time.Time) error {
+
+	// implement update logic here
+	_, err := DB.Exec(
+		"UPDATE food SET id=$1, name=$2, description=$3, category=$4, price=$5, stock=$6, image=$7, hotel_name=$8, hotel_id=$9, updated_date=$10 WHERE product_id=$11",
+		id, name, description, category, price, stock, image, hotel_name, hotel_id, time.Now(), product_id)
+
+	fmt.Println("Update Food Successfully")
+
+	return err
+}
+
+func DeleteFood(product_id string) error {
+
+	// implement delete logic here
+	_, err := DB.Exec("DELETE FROM food WHERE product_id=$1", product_id)
+
+	fmt.Println("Delete Food Successfully")
+
+	return err
+}
+
+// Restaurant GET, POST, PUT and DELETE
 func PostRestaurant(hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time string, ratings int, created_date, updated_date time.Time) (uint, error) {
 	var id uint
 
 	currentTime := time.Now()
 
-	// Insert into Food table
+	// Insert into Restaurant table
 	err := DB.QueryRow(
 		"INSERT INTO restaurant(hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time, ratings, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8 ,$9, $10, $11, $12, $13, $14, $15) RETURNING id",
 		hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time, ratings, currentTime, currentTime).Scan(&id)
@@ -140,7 +184,8 @@ func PostRestaurant(hotel_id, hotel_name, description, address, location, phone_
 }
 
 func GetRestaurant() ([]models.Restaurant, error) {
-	// implement get all orders logic here
+
+	// implement get all Restaurant logic here
 	query := "SELECT id, hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time, ratings, created_date, updated_date FROM restaurant"
 	rows, err := DB.Query(query)
 	if err != nil {
@@ -165,4 +210,96 @@ func GetRestaurant() ([]models.Restaurant, error) {
 	fmt.Println("Get Restaurants Successfully")
 
 	return restaurants, nil
+}
+
+func PutRestaurant(id uint, hotel_id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time string, ratings int, updated_date time.Time) error {
+
+	// implement update logic here
+	_, err := DB.Exec(
+		"UPDATE restaurant SET id=$1, hotel_name=$2, description=$3, address=$4, location=$5, phone_number=$6, email=$7, website=$8, menu=$9, profile_image=$10, open_time=$11, close_time=$12, ratings=$13, updated_date=$14 WHERE hotel_id=$15",
+		id, hotel_name, description, address, location, phone_number, email, website, menu, profile_image, open_time, close_time, ratings, time.Now(), hotel_id)
+
+	fmt.Println("Update Restaurant Successfully")
+
+	return err
+}
+
+func DeleteRestaurant(hotel_id string) error {
+
+	// implement delete logic here
+	_, err := DB.Exec("DELETE FROM restaurant WHERE hotel_id=$1", hotel_id)
+
+	fmt.Println("Delete Restaurant Successfully")
+
+	return err
+}
+
+// Order GET, POST, PUT and DELETE
+func PostOrder(order_id, customer_id, product_id, hotel_id, order_address, order_location, order_status string, quantity int, order_time, created_date, updated_date time.Time) (uint, error) {
+	var id uint
+
+	currentTime := time.Now()
+
+	// Insert into Order table
+	err := DB.QueryRow(
+		"INSERT INTO orders(order_id, customer_id, product_id, quantity, hotel_id, order_address, order_location, order_time, order_status, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8 ,$9, $10, $11) RETURNING id",
+		order_id, customer_id, product_id, quantity, hotel_id, order_address, order_location, currentTime, order_status, currentTime, currentTime).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("Post Order Successfully")
+
+	return id, nil
+}
+
+func GetOrder() ([]models.Order, error) {
+	// implement get all orders logic here
+	query := "SELECT id, order_id, customer_id, product_id, quantity, hotel_id, order_address, order_location, order_time, order_status, created_date, updated_date FROM orders"
+	rows, err := DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var orders []models.Order
+
+	for rows.Next() {
+		var order models.Order
+		if err := rows.Scan(&order.ID, &order.OrderID, &order.CustomerID, &order.ProductId, &order.Quantity, &order.HotelId, &order.OrderAddress, &order.OrderLocation, &order.OrderTime, &order.OrderStatus, &order.CreatedDate, &order.UpdatedDate); err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Get Order Successfully")
+
+	return orders, nil
+}
+
+func PutOrder(id uint, order_id, customer_id, product_id, hotel_id, order_address, order_location, order_status string, quantity int, order_time, updated_date time.Time) error {
+
+	// implement update logic here
+	_, err := DB.Exec(
+		"UPDATE orders SET id=$1, customer_id=$2, product_id=$3, hotel_id=$4, order_address=$5, order_location=$6, order_status=$7, quantity=$8, order_time=$9, updated_date=$10 WHERE order_id=$11",
+		id, customer_id, product_id, hotel_id, order_address, order_location, order_status, quantity, time.Now(), time.Now(), order_id)
+
+	fmt.Println("Update Order Successfully")
+
+	return err
+}
+
+func DeleteOrder(order_id string) error {
+
+	// implement delete logic here
+	_, err := DB.Exec("DELETE FROM orders WHERE order_id=$1", order_id)
+
+	fmt.Println("Delete Order Successfully")
+
+	return err
 }

@@ -22,5 +22,8 @@ func main() {
 	//Restaurant router
 	http.Handle("/restaurant", middleware.AuthMiddleware(http.HandlerFunc(handler.RestaurantHandler)))
 
+	//Order router
+	http.Handle("/order", middleware.AuthMiddleware(http.HandlerFunc(handler.OrderHandler)))
+
 	http.ListenAndServe(":8080", nil)
 }

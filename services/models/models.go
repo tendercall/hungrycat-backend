@@ -47,3 +47,18 @@ type Restaurant struct {
 	CreatedDate  time.Time `json:"created_date"`
 	UpdatedDate  time.Time `json:"updated_date"`
 }
+
+type Order struct {
+	ID            uint      `json:"id"`
+	OrderID       string    `json:"order_id"`
+	CustomerID    string    `json:"customer_id"`
+	ProductId     string    `json:"product_id"`
+	Quantity      int       `json:"quantity"`
+	HotelId       string    `json:"hotel_id"`
+	OrderAddress  string    `json:"order_address"`
+	OrderLocation string    `json:"order_location"`
+	OrderTime     time.Time `json:"order_time"`
+	OrderStatus   string    `json:"order_status"`
+	CreatedDate   time.Time `json:"created_date"`
+	UpdatedDate   time.Time `json:"updated_date"`
+}

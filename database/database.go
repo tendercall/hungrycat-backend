@@ -37,8 +37,9 @@ func Initdb() {
 	// createTable := `CREATE TABLE IF NOT EXISTS orders (
 	// id SERIAL PRIMARY KEY,
 	// order_id VARCHAR(256) UNIQUE NOT NULL,
+	// customer_id VARCHAR(256) UNIQUE NOT  NULL,
 	// product_id TEXT[] UNIQUE NOT NULL,
-	// Quantity VARCHAR(256),
+	// Quantity INTEGER,
 	// hotel_id VARCHAR(256) UNIQUE NOT NULL,
 	// order_address VARCHAR(256),
 	// order_location VARCHAR(256),
