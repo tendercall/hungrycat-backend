@@ -11,8 +11,12 @@ import (
 func main() {
 	database.Initdb()
 
+	//Customer router
+	http.Handle("/customer", middleware.AuthMiddleware(http.HandlerFunc(handler.CustomerHandler)))
+
 	//Admin router
 	http.Handle("/admin", middleware.AuthMiddleware(http.HandlerFunc(handler.AdminHandler)))
+
 	//sign in router
 	http.Handle("/signin", middleware.AuthMiddleware(http.HandlerFunc(handler.CheckEmailAndPasswordHandler)))
 

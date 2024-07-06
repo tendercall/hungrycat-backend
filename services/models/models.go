@@ -2,6 +2,19 @@ package models
 
 import "time"
 
+type Customer struct {
+	ID           uint      `json:"id"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	Password     string    `json:"password"`
+	PhoneNumber  string    `json:"phone_number"`
+	CustomerID   string    `json:"customer_id"`
+	ProfileImage string    `json:"profile_image"`
+	Address      string    `json:"address"`
+	Location     string    `json:"location"`
+	CreatedDate  time.Time `json:"created_date"`
+}
+
 type Admin struct {
 	ID           uint      `json:"id"`
 	Username     string    `json:"username"`

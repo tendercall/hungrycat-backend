@@ -10,8 +10,88 @@ import (
 	"hungerycat-backend.com/main/services/repository"
 )
 
-//Adin Handler
+// Customer Handler
+func CustomerHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		GetCustomerHandler(w, r)
+	} else if r.Method == http.MethodPost {
+		PostCustomerHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutCustomerHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteCustomerHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
 
+func PostCustomerHandler(w http.ResponseWriter, r *http.Request) {
+	var customer models.Customer
+
+	if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := repository.PostCustomer(customer.Name, customer.Email, customer.Password, customer.PhoneNumber, customer.CustomerID, customer.ProfileImage, customer.Address, customer.Location, customer.CreatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	customer.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(customer)
+}
+
+func GetCustomerHandler(w http.ResponseWriter, r *http.Request) {
+
+	customer, err := repository.GetCustomer()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(customer)
+}
+
+func PutCustomerHandler(w http.ResponseWriter, r *http.Request) {
+
+	var customer models.Customer
+	if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := repository.PutCustomer(customer.ID, customer.Name, customer.Email, customer.Password, customer.PhoneNumber, customer.CustomerID, customer.ProfileImage, customer.Address, customer.Location)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(customer)
+}
+
+func DeleteCustomerHandler(w http.ResponseWriter, r *http.Request) {
+	customer_id := r.URL.Query().Get("customer_id")
+	if customer_id == "" {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err := repository.DeleteCustomer(string(customer_id))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Admin Handler
 func AdminHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		GetAdminHandler(w, r)
@@ -41,6 +121,8 @@ func PostAdminHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	admin.ID = id
+
+	time.Sleep(1 * time.Minute)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(admin)

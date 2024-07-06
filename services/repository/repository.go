@@ -10,6 +10,76 @@ import (
 
 var DB *sql.DB
 
+// Customer GET, POST, PUT And DELETE methods
+func PostCustomer(name, email, password, phone_number, customer_id, profile_image, address, location string, created_date time.Time) (uint, error) {
+	var id uint
+
+	currentTime := time.Now()
+
+	// Insert into customer table
+	err := DB.QueryRow(
+		"INSERT INTO customer(name, email, password, phone_number, customer_id, profile_image, address, location, created_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id",
+		name, email, password, phone_number, customer_id, profile_image, address, location, currentTime).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("Post Customer Successfully")
+
+	return id, nil
+}
+
+func GetCustomer() ([]models.Customer, error) {
+	// implement get all customer logic here
+	query := "SELECT id, name, email, password, phone_number, customer_id, profile_image, address, location, created_date FROM customer"
+	rows, err := DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var customers []models.Customer
+
+	for rows.Next() {
+		var customer models.Customer
+		if err := rows.Scan(&customer.ID, &customer.Name, &customer.Email, &customer.Password, &customer.PhoneNumber, &customer.CustomerID, &customer.ProfileImage, &customer.Address, &customer.Location, &customer.CreatedDate); err != nil {
+			return nil, err
+		}
+		customers = append(customers, customer)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	fmt.Println("Get Customer Successfully")
+
+	return customers, nil
+}
+
+func PutCustomer(id uint, name, email, password, phone_number, customer_id, profile_image, address, location string) error {
+
+	// implement update logic here
+	_, err := DB.Exec(
+		"UPDATE customer SET id=$1, name=$2, email=$3, password=$4, phone_number=$5, profile_image=$6, address=$7, location=$8 WHERE customer_id=$9",
+		id, name, email, password, phone_number, profile_image, address, location, customer_id)
+
+	fmt.Println("Update Customer Successfully")
+
+	return err
+}
+
+func DeleteCustomer(customer_id string) error {
+
+	// implement delete logic here
+	_, err := DB.Exec("DELETE FROM customer WHERE customer_id=$1", customer_id)
+
+	fmt.Println("Delete Customer Successfully")
+
+	return err
+}
+
 // Admin GET, POST, PUT and DELETE methods
 func PostAdmin(username, email, password, phone_number, admin_id, profile_image string, created_at, last_signin time.Time) (uint, error) {
 	var id uint
