@@ -26,6 +26,9 @@ func CustomerHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostCustomerHandler(w http.ResponseWriter, r *http.Request) {
+
+	startTime := time.Now()
+
 	var customer models.Customer
 
 	if err := json.NewDecoder(r.Body).Decode(&customer); err != nil {
@@ -40,6 +43,11 @@ func PostCustomerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	customer.ID = id
+
+	endTime := time.Now()
+	executionTime := endTime.Sub(startTime)
+
+	fmt.Printf("Function executed in %v\n", executionTime)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(customer)
@@ -107,6 +115,9 @@ func AdminHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostAdminHandler(w http.ResponseWriter, r *http.Request) {
+
+	startTime := time.Now()
+
 	var admin models.Admin
 
 	if err := json.NewDecoder(r.Body).Decode(&admin); err != nil {
@@ -122,8 +133,10 @@ func PostAdminHandler(w http.ResponseWriter, r *http.Request) {
 
 	admin.ID = id
 
-	time.Sleep(1 * time.Minute)
+	endTime := time.Now()
+	executionTime := endTime.Sub(startTime)
 
+	fmt.Printf("Function executed in %v\n", executionTime)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(admin)
 }
@@ -222,6 +235,9 @@ func FoodHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostFoodHandler(w http.ResponseWriter, r *http.Request) {
+
+	startTime := time.Now()
+
 	var food models.Food
 
 	if err := json.NewDecoder(r.Body).Decode(&food); err != nil {
@@ -236,6 +252,11 @@ func PostFoodHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	food.ID = id
+
+	endTime := time.Now()
+	executionTime := endTime.Sub(startTime)
+
+	fmt.Printf("Function executed in %v\n", executionTime)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(food)
@@ -306,6 +327,9 @@ func RestaurantHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostRestaurantHandler(w http.ResponseWriter, r *http.Request) {
+
+	startTime := time.Now()
+
 	var restaurant models.Restaurant
 
 	if err := json.NewDecoder(r.Body).Decode(&restaurant); err != nil {
@@ -320,6 +344,11 @@ func PostRestaurantHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	restaurant.ID = id
+
+	endTime := time.Now()
+	executionTime := endTime.Sub(startTime)
+
+	fmt.Printf("Function executed in %v\n", executionTime)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(restaurant)
@@ -390,6 +419,9 @@ func OrderHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PostOrderHandler(w http.ResponseWriter, r *http.Request) {
+
+	startTime := time.Now()
+
 	var order models.Order
 
 	if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
@@ -404,6 +436,11 @@ func PostOrderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	order.ID = id
+
+	endTime := time.Now()
+	executionTime := endTime.Sub(startTime)
+
+	fmt.Printf("Function executed in %v\n", executionTime)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(order)
