@@ -29,5 +29,9 @@ func main() {
 	//Order router
 	http.Handle("/order", middleware.AuthMiddleware(http.HandlerFunc(handler.OrderHandler)))
 
+	//test router
+	http.Handle("/test", middleware.AuthMiddleware(http.HandlerFunc(handler.TestHandler)))
+	http.Handle("/test/{id}", middleware.AuthMiddleware(http.HandlerFunc(handler.TestGetByIdHandler)))
+
 	http.ListenAndServe(":8080", nil)
 }

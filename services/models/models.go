@@ -75,3 +75,9 @@ type Order struct {
 	CreatedDate   time.Time `json:"created_date"`
 	UpdatedDate   time.Time `json:"updated_date"`
 }
+
+type Test struct {
+	ID       uint   `json:"id"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

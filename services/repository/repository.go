@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	"hungerycat-backend.com/main/services/models"
@@ -372,4 +373,54 @@ func DeleteOrder(order_id string) error {
 	fmt.Println("Delete Order Successfully")
 
 	return err
+}
+
+// test POST and GET method
+func TestPost(email, password string) (uint, error) {
+	// implement post logic here
+	var id uint
+
+	err := DB.QueryRow(
+		"INSERT INTO test(email, password) VALUES ($1 , $2) RETURNING id",
+		email, password).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
+
+func TestGet() ([]models.Test, error) {
+	// implement get logic here
+	rows, err := DB.Query("SELECT id,email,password FROM test")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tests []models.Test
+	for rows.Next() {
+		var test models.Test
+		err = rows.Scan(&test.ID, &test.Email, &test.Password)
+		if err != nil {
+			return nil, err
+		}
+
+		tests = append(tests, test)
+	}
+	return tests, nil
+}
+
+func TestGetById(id uint) (*models.Test, error) {
+	// implement get logic here
+	var test models.Test
+
+	err := DB.QueryRow("SELECT id,email,password FROM test WHERE id = $1", id).Scan(&test.ID, &test.Email, &test.Password)
+	if err != nil {
+		log.Println("Error", err)
+		return nil, err
+	}
+
+	return &test, nil
+
 }

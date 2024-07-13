@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"hungerycat-backend.com/main/services/models"
@@ -494,4 +495,62 @@ func DeleteOrderHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// Test Handler
+func TestHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		TestGetHandler(w, r)
+	} else if r.Method == http.MethodPost {
+		TestPostHandler(w, r)
+	} else {
+		http.Error(w, "Invalid Method", http.StatusBadRequest)
+	}
+}
+
+func TestPostHandler(w http.ResponseWriter, r *http.Request) {
+	var test models.Test
+	if err := json.NewDecoder(r.Body).Decode(&test); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := repository.TestPost(test.Email, test.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	test.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(test)
+}
+
+func TestGetHandler(w http.ResponseWriter, r *http.Request) {
+	test, err := repository.TestGet()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(test)
+}
+
+func TestGetByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Invalid Method", http.StatusBadRequest)
+	}
+
+	idstr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+	test, err := repository.TestGetById(uint(id))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(test)
 }
