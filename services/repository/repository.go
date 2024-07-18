@@ -165,7 +165,7 @@ func CheckEmailAndPassword(email, password string) (bool, error) {
 }
 
 // Food GET ,POST, PUT and DELETE
-func PostFood(name, description, category, product_id, image, hotel_name, hotel_id string, price int, stock bool, created_date, updated_date time.Time) (uint, error) {
+func PostFood(name, description, category, product_id, image, hotel_name, hotel_id string, price, stock int, created_date, updated_date time.Time) (uint, error) {
 	var id uint
 
 	currentTime := time.Now()
@@ -212,7 +212,7 @@ func GetFood() ([]models.Food, error) {
 	return foods, nil
 }
 
-func PutFood(id uint, name, description, category, product_id, image, hotel_name, hotel_id string, price int, stock bool, updated_date time.Time) error {
+func PutFood(id uint, name, description, category, product_id, image, hotel_name, hotel_id string, price, stock int, updated_date time.Time) error {
 
 	// implement update logic here
 	_, err := DB.Exec(
@@ -383,6 +383,7 @@ func TestPost(email, password string) (uint, error) {
 	err := DB.QueryRow(
 		"INSERT INTO test(email, password) VALUES ($1 , $2) RETURNING id",
 		email, password).Scan(&id)
+
 	if err != nil {
 		return 0, err
 	}

@@ -34,7 +34,7 @@ type Food struct {
 	Category    string    `json:"category"`
 	ProductId   string    `json:"product_id"`
 	Price       int       `json:"price"`
-	Stock       bool      `json:"stock"`
+	Stock       int       `json:"stock"`
 	Image       string    `json:"image"`
 	HotelName   string    `json:"hotel_name"`
 	HotelId     string    `json:"hotel_id"`
