@@ -165,28 +165,25 @@ func CheckEmailAndPassword(email, password string) (bool, error) {
 }
 
 // Food GET ,POST, PUT and DELETE
-func PostFood(name, description, category, product_id, image, hotel_name, hotel_id string, price, stock int, created_date, updated_date time.Time) (uint, error) {
+func PostFood(name, description, category, productID, image, hotelName, hotelID string, price, stock, offer int, createdDate, updatedDate time.Time) (uint, error) {
 	var id uint
-
 	currentTime := time.Now()
 
-	// Insert into Food table
-	err := DB.QueryRow(
-		"INSERT INTO food(name, description, category, product_id, price, stock, image, hotel_name, hotel_id, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8 ,$9, $10, $11) RETURNING id",
-		name, description, category, product_id, price, stock, image, hotel_name, hotel_id, currentTime, currentTime).Scan(&id)
+	err := DB.QueryRow(`
+		INSERT INTO food(name, description, category, product_id, price, stock, image, hotel_name, hotel_id, created_date, updated_date, offer)VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`, name, description, category, productID, price, stock, image, hotelName, hotelID, currentTime, currentTime, offer).Scan(&id)
 
 	if err != nil {
 		return 0, err
 	}
 
-	fmt.Println("Post food Successfully")
+	fmt.Println("Successfully inserted food into database")
 
 	return id, nil
 }
 
 func GetFood() ([]models.Food, error) {
 	// implement get all orders logic here
-	query := "SELECT id, name, description, category, product_id, price, stock, image, hotel_name, hotel_id, created_date, updated_date FROM food"
+	query := "SELECT id, name, description, category, product_id, price, stock, image, hotel_name, hotel_id, created_date, updated_date, offer FROM food"
 	rows, err := DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -197,7 +194,7 @@ func GetFood() ([]models.Food, error) {
 
 	for rows.Next() {
 		var food models.Food
-		if err := rows.Scan(&food.ID, &food.Name, &food.Description, &food.Category, &food.ProductId, &food.Price, &food.Stock, &food.Image, &food.HotelName, &food.HotelId, &food.CreatedDate, &food.UpdatedDate); err != nil {
+		if err := rows.Scan(&food.ID, &food.Name, &food.Description, &food.Category, &food.ProductId, &food.Price, &food.Stock, &food.Image, &food.HotelName, &food.HotelId, &food.CreatedDate, &food.UpdatedDate, &food.Offer); err != nil {
 			return nil, err
 		}
 		foods = append(foods, food)
@@ -212,12 +209,12 @@ func GetFood() ([]models.Food, error) {
 	return foods, nil
 }
 
-func PutFood(id uint, name, description, category, product_id, image, hotel_name, hotel_id string, price, stock int, updated_date time.Time) error {
+func PutFood(id uint, name, description, category, product_id, image, hotel_name, hotel_id string, price, stock, offer int, updated_date time.Time) error {
 
 	// implement update logic here
 	_, err := DB.Exec(
-		"UPDATE food SET id=$1, name=$2, description=$3, category=$4, price=$5, stock=$6, image=$7, hotel_name=$8, hotel_id=$9, updated_date=$10 WHERE product_id=$11",
-		id, name, description, category, price, stock, image, hotel_name, hotel_id, time.Now(), product_id)
+		"UPDATE food SET id=$1, name=$2, description=$3, category=$4, price=$5, stock=$6, offer=$7, image=$8, hotel_name=$9, hotel_id=$10, updated_date=$11 WHERE product_id=$12",
+		id, name, description, category, price, stock, image, hotel_name, hotel_id, time.Now(), offer, product_id)
 
 	fmt.Println("Update Food Successfully")
 
@@ -424,4 +421,90 @@ func TestGetById(id uint) (*models.Test, error) {
 
 	return &test, nil
 
+}
+
+// Delivery POST, GET, PUT and DELETE
+func PostDelivery(name, phone_number, db_id, location, latitude, longitude string, total_payment, total_orders int, created_date, updated_date time.Time) (uint, error) {
+	// implement post logic here
+	var id uint
+
+	currentTime := time.Now()
+
+	// insert into delivery table
+	err := DB.QueryRow("INSERT INTO delivery_boy (name, phone_number, db_id, location, latitude, longitude, total_payment, total_orders, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id", name, phone_number, db_id, location, latitude, longitude, total_payment, total_orders, currentTime, currentTime).Scan(&id)
+	if err != nil {
+		log.Println("Error", err)
+		return 0, err
+	}
+
+	fmt.Println("Post successfull")
+
+	return id, nil
+}
+
+func GetDelivery() ([]models.DeliveryBoy, error) {
+	// implement get logic here
+	rows, err := DB.Query("SELECT id, name, phone_number, db_id, location, latitude, longitude, total_payment, total_orders, created_date, updated_date FROM delivery_boy")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var deliveryBoys []models.DeliveryBoy
+	for rows.Next() {
+		var deliveryBoy models.DeliveryBoy
+		err := rows.Scan(&deliveryBoy.ID, &deliveryBoy.Name, &deliveryBoy.PhoneNumber, &deliveryBoy.DbID, &deliveryBoy.Location, &deliveryBoy.Latitude, &deliveryBoy.Longitude, &deliveryBoy.TotalPayment, &deliveryBoy.TotalOrder, &deliveryBoy.CreatedDate, &deliveryBoy.TotalOrder)
+		if err != nil {
+			log.Println("Error", err)
+		}
+
+		deliveryBoys = append(deliveryBoys, deliveryBoy)
+	}
+
+	fmt.Println("Get successfull")
+
+	return deliveryBoys, nil
+}
+
+func PutDelivery(id uint, name, phone_number, db_id, location, latitude, longitude string, total_payment, total_orders int, updated_date time.Time) error {
+	// implement put logic here
+	result, err := DB.Exec("UPDATE delivery_boy SET id=$1, name=$2, phone_number=$3, location=$4, latitude=$5, longitude=$6, total_payment=$7, total_orders=$8, updated_date=$9 WHERE db_id=$10", id, name, phone_number, location, latitude, longitude, total_payment, total_orders, time.Now(), db_id)
+	if err != nil {
+		return fmt.Errorf("failed to query delivery boy: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("delivery boy not found")
+	}
+
+	fmt.Println("Update successfull")
+
+	return nil
+}
+
+func DeleteDelivery(db_id string) error {
+	// implement delete logic here
+	result, err := DB.Exec("DELETE FROM delivery_boy WHERE db_id=$1", db_id)
+	if err != nil {
+		return fmt.Errorf("failed to query delivery boy: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("delivery boy not found")
+	}
+
+	fmt.Println("Delete successfull")
+
+	return nil
 }

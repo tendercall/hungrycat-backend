@@ -40,6 +40,7 @@ type Food struct {
 	HotelId     string    `json:"hotel_id"`
 	CreatedDate time.Time `json:"created_date"`
 	UpdatedDate time.Time `json:"updated_date"`
+	Offer       int       `json:"offer"`
 }
 
 type Restaurant struct {
@@ -80,4 +81,18 @@ type Test struct {
 	ID       uint   `json:"id"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type DeliveryBoy struct {
+	ID           uint      `json:"id"`
+	Name         string    `json:"name"`
+	PhoneNumber  string    `json:"phone_number"`
+	DbID         string    `json:"db_id"`
+	Location     string    `json:"location"`
+	Latitude     string    `json:"latitude"`
+	Longitude    string    `json:"longitude"`
+	TotalPayment int       `json:"total_payment"`
+	TotalOrder   int       `json:"total_orders"`
+	CreatedDate  time.Time `json:"created_date"`
+	UpdatedDate  time.Time `json:"updated_date"`
 }

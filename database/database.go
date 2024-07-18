@@ -34,10 +34,19 @@ func Initdb() {
 	}
 	fmt.Println("Database connection established")
 
-	// createTable := `CREATE TABLE IF NOT EXISTS test (
+	// createTable := `CREATE TABLE IF NOT EXISTS delivery_boy (
 	// id SERIAL PRIMARY KEY,
-	// email VARCHAR(256),
-	// password VARCHAR(256)
+	// name VARCHAR(256),
+	// phone_number VARCHAR(256),
+	// db_id VARCHAR(256),
+	// Location VARCHAR(256),
+	// latitude VARCHAR(256),
+	// longitude VARCHAR(256),
+	// total_payment INTEGER,
+	// total_orders INTEGER,
+	// profile_image VARCHAR(256),
+	// created_date TIMESTAMP NOT NULL DEFAULT NOW(),
+	// updated_date TIMESTAMP NOT NULL DEFAULT NOW()
 	// )`
 
 	// _, err = repository.DB.Exec(createTable)
