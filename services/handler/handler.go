@@ -851,3 +851,108 @@ func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// Banner Handler
+func BannerHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostBannerHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetBannerHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutBannerHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteBannerHandler(w, r)
+	} else {
+		http.Error(w, "Invalid Method", http.StatusBadRequest)
+	}
+}
+
+func PostBannerHandler(w http.ResponseWriter, r *http.Request) {
+	var banner models.Banner
+	if err := json.NewDecoder(r.Body).Decode(&banner); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := repository.PostBanner(banner.Title, banner.BannerID, banner.Image, banner.CreatedDate, banner.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	banner.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(banner)
+}
+
+func GetBannerHandler(w http.ResponseWriter, r *http.Request) {
+	banner, err := repository.GetBanner()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(banner)
+}
+
+func PutBannerHandler(w http.ResponseWriter, r *http.Request) {
+	// Extract category_id from query parameters
+	queryParams := r.URL.Query()
+	BannerID := queryParams.Get("banner_id")
+	if BannerID == "" {
+		http.Error(w, "Missing category_id query parameter", http.StatusBadRequest)
+		return
+	}
+
+	var banner models.Banner
+	if err := json.NewDecoder(r.Body).Decode(&banner); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the banner_id from the query parameter
+	banner.BannerID = BannerID
+
+	// Set the updated date to the current time
+	banner.UpdatedDate = time.Now()
+
+	// Update the Banner in the repository
+	err := repository.PutBanner(banner.ID, banner.Title, banner.BannerID, banner.Image, banner.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Banner not found" {
+			http.Error(w, "Banner not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Banner: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(banner); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteBannerHandler(w http.ResponseWriter, r *http.Request) {
+	BannerID := r.URL.Query().Get("banner_id")
+	if BannerID == "" {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err := repository.DeleteBanner(BannerID)
+	if err != nil {
+		if err.Error() == "Banner not found" {
+			http.Error(w, "Banner boy not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to delete Banner: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

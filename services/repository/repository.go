@@ -518,6 +518,7 @@ func PostCategory(title, category_id, icon string, created_date, updated_date ti
 
 	err := DB.QueryRow("INSERT INTO category (title, category_id, icon, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", title, category_id, icon, currentTime, currentTime)
 	if err != nil {
+		log.Println("Error", err)
 		return 0, nil
 	}
 
@@ -588,6 +589,90 @@ func DeleteCategory(category_id string) error {
 
 	if rowsAffected == 0 {
 		return fmt.Errorf("category boy not found")
+	}
+
+	fmt.Println("Delete successfull")
+
+	return nil
+}
+
+// Banner POST, GET, PUT and DELETE
+func PostBanner(title, banner_id, image string, created_date, updated_date time.Time) (uint, error) {
+	// implement post logic here
+	var id uint
+
+	currentTime := time.Now()
+
+	err := DB.QueryRow("INSERT INTO banner (title, banner_id, image, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", title, banner_id, image, currentTime, currentTime)
+	if err != nil {
+		log.Println("Error", err)
+		return 0, nil
+	}
+
+	fmt.Println("Post Successful")
+
+	return id, nil
+}
+
+func GetBanner() ([]models.Banner, error) {
+	// implement get logic here
+	rows, err := DB.Query("SELECT id, title, banner_id, image, created_date, updated_date FROM banner")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var banners []models.Banner
+	for rows.Next() {
+		var banner models.Banner
+		err := rows.Scan(&banner.ID, &banner.Title, &banner.BannerID, &banner.Image, &banner.CreatedDate, &banner.UpdatedDate)
+		if err != nil {
+			return nil, err
+		}
+		banners = append(banners, banner)
+	}
+
+	fmt.Println("Get Successful")
+
+	return banners, nil
+}
+
+func PutBanner(id uint, title, banner_id, image string, updated_date time.Time) error {
+	// implement put logic here
+	result, err := DB.Exec("UPDATE banner SET id=$1, title=$2, image=$3, updated_date=$4 WHERE banner_id=$5", id, title, image, time.Now(), banner_id)
+	if err != nil {
+		return fmt.Errorf("failed to query Banner: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("banner not found")
+	}
+
+	fmt.Println("Update successfull")
+
+	return nil
+}
+
+func DeleteBanner(banner_id string) error {
+	// implement delete logic here
+	result, err := DB.Exec("DELETE FROM banner WHERE banner_id=$1", banner_id)
+
+	if err != nil {
+		return fmt.Errorf("failed to query category: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("banner not found")
 	}
 
 	fmt.Println("Delete successfull")

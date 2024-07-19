@@ -29,15 +29,18 @@ func main() {
 	//Order router
 	http.Handle("/order", middleware.AuthMiddleware(http.HandlerFunc(handler.OrderHandler)))
 
-	//test router
+	//Test router
 	http.Handle("/test", middleware.AuthMiddleware(http.HandlerFunc(handler.TestHandler)))
 	http.Handle("/test/{id}", middleware.AuthMiddleware(http.HandlerFunc(handler.TestGetByIdHandler)))
 
-	//delivery router
+	//Delivery router
 	http.Handle("/delivery", middleware.AuthMiddleware(http.HandlerFunc(handler.DeliveryBoyHandler)))
 
-	//categoory router
+	//Categoory router
 	http.Handle("/category", middleware.AuthMiddleware(http.HandlerFunc(handler.CategoryHandler)))
+
+	//Banner router
+	http.Handle("/banner", middleware.AuthMiddleware(http.HandlerFunc(handler.BannerHandler)))
 
 	http.ListenAndServe(":8080", nil)
 }

@@ -34,11 +34,11 @@ func Initdb() {
 	}
 	fmt.Println("Database connection established")
 
-	// createTable := `CREATE TABLE IF NOT EXISTS category (
+	// createTable := `CREATE TABLE IF NOT EXISTS banner (
 	// id SERIAL PRIMARY KEY,
 	// title VARCHAR(256),
-	// category_id VARCHAR(256),
-	// icon VARCHAR(256),
+	// banner_id VARCHAR(256),
+	// image VARCHAR(256),
 	// created_date TIMESTAMP NOT NULL DEFAULT NOW(),
 	// updated_date TIMESTAMP NOT NULL DEFAULT NOW()
 	// )`

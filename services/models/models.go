@@ -105,3 +105,12 @@ type Category struct {
 	CreatedDate time.Time `json:"created_date"`
 	UpdatedDate time.Time `json:"updated_date"`
 }
+
+type Banner struct {
+	ID          uint      `json:"id"`
+	Title       string    `json:"title"`
+	BannerID    string    `json:"banner_id"`
+	Image       string    `json:"image"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+}
