@@ -36,5 +36,8 @@ func main() {
 	//delivery router
 	http.Handle("/delivery", middleware.AuthMiddleware(http.HandlerFunc(handler.DeliveryBoyHandler)))
 
+	//categoory router
+	http.Handle("/category", middleware.AuthMiddleware(http.HandlerFunc(handler.CategoryHandler)))
+
 	http.ListenAndServe(":8080", nil)
 }

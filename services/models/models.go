@@ -96,3 +96,12 @@ type DeliveryBoy struct {
 	CreatedDate  time.Time `json:"created_date"`
 	UpdatedDate  time.Time `json:"updated_date"`
 }
+
+type Category struct {
+	ID          uint      `json:"id"`
+	Title       string    `json:"title"`
+	CategoryID  string    `json:"category_id"`
+	Icon        string    `json:"icon"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+}

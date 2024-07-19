@@ -746,3 +746,108 @@ func DeleteDeliveryBoyHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// Category Handler
+func CategoryHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostCategoryHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetCategoryHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutCategoryHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteCategoryHandler(w, r)
+	} else {
+		http.Error(w, "Invalid Method", http.StatusBadRequest)
+	}
+}
+
+func PostCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	var category models.Category
+	if err := json.NewDecoder(r.Body).Decode(&category); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := repository.PostCategory(category.Title, category.CategoryID, category.Icon, category.CreatedDate, category.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	category.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(category)
+}
+
+func GetCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	category, err := repository.GetCategory()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(category)
+}
+
+func PutCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	// Extract category_id from query parameters
+	queryParams := r.URL.Query()
+	CategoryID := queryParams.Get("category_id")
+	if CategoryID == "" {
+		http.Error(w, "Missing category_id query parameter", http.StatusBadRequest)
+		return
+	}
+
+	var category models.Category
+	if err := json.NewDecoder(r.Body).Decode(&category); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the category_id from the query parameter
+	category.CategoryID = CategoryID
+
+	// Set the updated date to the current time
+	category.UpdatedDate = time.Now()
+
+	// Update the Category in the repository
+	err := repository.PutCategory(category.ID, category.Title, category.CategoryID, category.Icon, category.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Category not found" {
+			http.Error(w, "Category not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Category: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(category); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteCategoryHandler(w http.ResponseWriter, r *http.Request) {
+	CategoryID := r.URL.Query().Get("category_id")
+	if CategoryID == "" {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err := repository.DeleteCategory(CategoryID)
+	if err != nil {
+		if err.Error() == "Category not found" {
+			http.Error(w, "Category boy not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to delete Category: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

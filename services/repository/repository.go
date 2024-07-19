@@ -508,3 +508,89 @@ func DeleteDelivery(db_id string) error {
 
 	return nil
 }
+
+// Category GET, POST , PUT and DELETE
+func PostCategory(title, category_id, icon string, created_date, updated_date time.Time) (uint, error) {
+	// implement post logic here
+	var id uint
+
+	currentTime := time.Now()
+
+	err := DB.QueryRow("INSERT INTO category (title, category_id, icon, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", title, category_id, icon, currentTime, currentTime)
+	if err != nil {
+		return 0, nil
+	}
+
+	fmt.Println("Post Successful")
+
+	return id, nil
+}
+
+func GetCategory() ([]models.Category, error) {
+	// implement get logic here
+	rows, err := DB.Query("SELECT id, title, category_id, icon, created_date, updated_date FROM category")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var categories []models.Category
+	for rows.Next() {
+		var category models.Category
+		err := rows.Scan(&category.ID, &category.Title, &category.CategoryID, &category.Icon, &category.CreatedDate, &category.UpdatedDate)
+		if err != nil {
+			return nil, err
+		}
+		categories = append(categories, category)
+	}
+
+	fmt.Println("Get Successful")
+
+	return categories, nil
+}
+
+func PutCategory(id uint, title, category_id, icon string, updated_date time.Time) error {
+	// implement put logic here
+	result, err := DB.Exec("UPDATE category SET id=$1, title=$2, icon=$3, updated_date=$4 WHERE category_id=$5", id, title, icon, time.Now(), category_id)
+
+	if err != nil {
+		return fmt.Errorf("failed to query category: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("category not found")
+	}
+
+	fmt.Println("Update successfull")
+
+	return nil
+}
+
+func DeleteCategory(category_id string) error {
+	// implement delete logic here
+	result, err := DB.Exec("DELETE FROM category WHERE category_id=$1", category_id)
+
+	if err != nil {
+		return fmt.Errorf("failed to query category: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("category boy not found")
+	}
+
+	fmt.Println("Delete successfull")
+
+	return nil
+}
