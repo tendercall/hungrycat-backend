@@ -48,4 +48,18 @@ func Initdb() {
 	// 	log.Fatal(err)
 	// }
 	// fmt.Println("Table created successfully")
+
+	// Example ALTER TABLE statement to add a new column
+	// query := `
+	// 	ALTER TABLE banner
+	// 	ADD COLUMN discount INTEGER;
+	// `
+
+	// // Execute the ALTER TABLE statement
+	// _, err = repository.DB.Exec(query)
+	// if err != nil {
+	// 	log.Fatalf("Error executing ALTER TABLE statement: %v\n", err)
+	// }
+
+	// fmt.Println("Column added successfully.")
 }

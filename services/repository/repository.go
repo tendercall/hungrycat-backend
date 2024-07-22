@@ -595,13 +595,13 @@ func DeleteCategory(category_id string) error {
 }
 
 // Banner POST, GET, PUT and DELETE
-func PostBanner(title, banner_id, image string, created_date, updated_date time.Time) (uint, error) {
+func PostBanner(title, banner_id, image, subtitle, discount string, created_date, updated_date time.Time) (uint, error) {
 	// implement post logic here
 	var id uint
 
 	currentTime := time.Now()
 
-	err := DB.QueryRow("INSERT INTO banner (title, banner_id, image, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", title, banner_id, image, currentTime, currentTime).Scan(&id)
+	err := DB.QueryRow("INSERT INTO banner (title, banner_id, image, created_date, updated_date, subtitle, discount) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", title, banner_id, image, currentTime, currentTime, subtitle, discount).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -613,7 +613,7 @@ func PostBanner(title, banner_id, image string, created_date, updated_date time.
 
 func GetBanner() ([]models.Banner, error) {
 	// implement get logic here
-	rows, err := DB.Query("SELECT id, title, banner_id, image, created_date, updated_date FROM banner")
+	rows, err := DB.Query("SELECT id, title, banner_id, image, created_date, updated_date, subtitle, discount FROM banner")
 	if err != nil {
 		return nil, err
 	}
@@ -622,7 +622,7 @@ func GetBanner() ([]models.Banner, error) {
 	var banners []models.Banner
 	for rows.Next() {
 		var banner models.Banner
-		err := rows.Scan(&banner.ID, &banner.Title, &banner.BannerID, &banner.Image, &banner.CreatedDate, &banner.UpdatedDate)
+		err := rows.Scan(&banner.ID, &banner.Title, &banner.BannerID, &banner.Image, &banner.CreatedDate, &banner.UpdatedDate, &banner.Subtitle, &banner.Discount)
 		if err != nil {
 			return nil, err
 		}
@@ -634,9 +634,9 @@ func GetBanner() ([]models.Banner, error) {
 	return banners, nil
 }
 
-func PutBanner(id uint, title, banner_id, image string, updated_date time.Time) error {
+func PutBanner(id uint, title, banner_id, image, subtitle, discount string, updated_date time.Time) error {
 	// implement put logic here
-	result, err := DB.Exec("UPDATE banner SET id=$1, title=$2, image=$3, updated_date=$4 WHERE banner_id=$5", id, title, image, time.Now(), banner_id)
+	result, err := DB.Exec("UPDATE banner SET id=$1, title=$2, image=$3, updated_date=$4, subtitle=$5, discount=$6 WHERE banner_id=$7", id, title, image, time.Now(), subtitle, discount, banner_id)
 	if err != nil {
 		return fmt.Errorf("failed to query Banner: %w", err)
 	}

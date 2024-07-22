@@ -113,6 +113,8 @@ type Banner struct {
 	Image       string    `json:"image"`
 	CreatedDate time.Time `json:"created_date"`
 	UpdatedDate time.Time `json:"updated_date"`
+	Subtitle    string    `json:"subtitle"`
+	Discount    string    `json:"discount"`
 }
 
 type Offer struct {
