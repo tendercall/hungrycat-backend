@@ -946,10 +946,218 @@ func DeleteBannerHandler(w http.ResponseWriter, r *http.Request) {
 	err := repository.DeleteBanner(BannerID)
 	if err != nil {
 		if err.Error() == "Banner not found" {
-			http.Error(w, "Banner boy not found", http.StatusNotFound)
+			http.Error(w, "Banner not found", http.StatusNotFound)
 			return
 		} else {
 			http.Error(w, fmt.Sprintf("Failed to delete Banner: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Offer Handler
+func OfferHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostOfferHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetOfferHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutOfferHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteOfferHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostOfferHandler(w http.ResponseWriter, r *http.Request) {
+	var offer models.Offer
+	if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := repository.PostOffer(offer.Title, offer.Subtitle, offer.OfferID, offer.Image, offer.Offer, offer.CreatedDate, offer.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	offer.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(offer)
+}
+
+func GetOfferHandler(w http.ResponseWriter, r *http.Request) {
+	offer, err := repository.GetOffer()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(offer)
+}
+
+func PutOfferHandler(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	OfferID := queryParams.Get("offer_id")
+	if OfferID == "" {
+		http.Error(w, "Missing offer_id query parameter", http.StatusBadRequest)
+		return
+	}
+
+	var offer models.Offer
+	if err := json.NewDecoder(r.Body).Decode(&offer); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the offer_id from the query parameter
+	offer.OfferID = OfferID
+
+	// Set the updated date to the current time
+	offer.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err := repository.PutOffer(offer.ID, offer.Title, offer.Subtitle, offer.OfferID, offer.Image, offer.Offer, offer.UpdatedDate)
+	if err != nil {
+		if err.Error() == "offer not found" {
+			http.Error(w, "Offer not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update offer: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(offer); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteOfferHandler(w http.ResponseWriter, r *http.Request) {
+	OfferID := r.URL.Query().Get("offer_id")
+	if OfferID == "" {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err := repository.DeleteOffer(OfferID)
+	if err != nil {
+		if err.Error() == "Offer not found" {
+			http.Error(w, "Offer not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to delete Offer: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Address Handler
+func AddressHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostAddressHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetAddressHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutAddressHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteAddressHandler(w, r)
+	} else {
+		http.Error(w, "Invalid Method", http.StatusBadRequest)
+	}
+}
+
+func PostAddressHandler(w http.ResponseWriter, r *http.Request) {
+	var address models.Details
+	if err := json.NewDecoder(r.Body).Decode(&address); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	id, err := repository.PostAddress(address.Address, address.BuildingType, address.CustomerID, address.CreatedDate, address.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	address.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(address)
+}
+
+func GetAddressHandler(w http.ResponseWriter, r *http.Request) {
+	address, err := repository.GetAddress()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(address)
+}
+
+func PutAddressHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var address models.Details
+	if err := json.NewDecoder(r.Body).Decode(&address); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the offer_id from the query parameter
+	address.ID = uint(id)
+
+	// Set the updated date to the current time
+	address.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err = repository.PutAddress(address.ID, address.Address, address.BuildingType, address.CustomerID, address.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Address not found" {
+			http.Error(w, "Address not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update address: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(address); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteAddressHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err = repository.DeleteAddress(uint(id))
+	if err != nil {
+		if err.Error() == "Address not found" {
+			http.Error(w, "Address not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to delete Address: %v", err), http.StatusInternalServerError)
 			return
 		}
 	}

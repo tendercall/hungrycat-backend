@@ -114,3 +114,23 @@ type Banner struct {
 	CreatedDate time.Time `json:"created_date"`
 	UpdatedDate time.Time `json:"updated_date"`
 }
+
+type Offer struct {
+	ID          uint      `json:"id"`
+	Title       string    `json:"title"`
+	Subtitle    string    `json:"subtitle"`
+	Offer       int       `json:"offer"`
+	OfferID     string    `json:"offer_id"`
+	Image       string    `json:"image"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+}
+
+type Details struct {
+	ID           uint      `json:"id"`
+	Address      string    `json:"address"`
+	BuildingType string    `json:"building_type"`
+	CustomerID   string    `json:"customer_id"`
+	CreatedDate  time.Time `json:"created_date"`
+	UpdatedDate  time.Time `json:"updated_date"`
+}

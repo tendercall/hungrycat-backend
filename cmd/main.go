@@ -42,5 +42,11 @@ func main() {
 	//Banner router
 	http.Handle("/banner", middleware.AuthMiddleware(http.HandlerFunc(handler.BannerHandler)))
 
+	//Offer router
+	http.Handle("/offer", middleware.AuthMiddleware(http.HandlerFunc(handler.OfferHandler)))
+
+	//Address router
+	http.Handle("/address", middleware.AuthMiddleware(http.HandlerFunc(handler.AddressHandler)))
+
 	http.ListenAndServe(":8080", nil)
 }

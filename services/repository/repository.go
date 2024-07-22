@@ -433,7 +433,6 @@ func PostDelivery(name, phone_number, db_id, location, latitude, longitude strin
 	// insert into delivery table
 	err := DB.QueryRow("INSERT INTO delivery_boy (name, phone_number, db_id, location, latitude, longitude, total_payment, total_orders, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id", name, phone_number, db_id, location, latitude, longitude, total_payment, total_orders, currentTime, currentTime).Scan(&id)
 	if err != nil {
-		log.Println("Error", err)
 		return 0, err
 	}
 
@@ -516,10 +515,9 @@ func PostCategory(title, category_id, icon string, created_date, updated_date ti
 
 	currentTime := time.Now()
 
-	err := DB.QueryRow("INSERT INTO category (title, category_id, icon, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", title, category_id, icon, currentTime, currentTime)
+	err := DB.QueryRow("INSERT INTO category (title, category_id, icon, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", title, category_id, icon, currentTime, currentTime).Scan(&id)
 	if err != nil {
-		log.Println("Error", err)
-		return 0, nil
+		return 0, err
 	}
 
 	fmt.Println("Post Successful")
@@ -603,10 +601,9 @@ func PostBanner(title, banner_id, image string, created_date, updated_date time.
 
 	currentTime := time.Now()
 
-	err := DB.QueryRow("INSERT INTO banner (title, banner_id, image, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", title, banner_id, image, currentTime, currentTime)
+	err := DB.QueryRow("INSERT INTO banner (title, banner_id, image, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", title, banner_id, image, currentTime, currentTime).Scan(&id)
 	if err != nil {
-		log.Println("Error", err)
-		return 0, nil
+		return 0, err
 	}
 
 	fmt.Println("Post Successful")
@@ -673,6 +670,172 @@ func DeleteBanner(banner_id string) error {
 
 	if rowsAffected == 0 {
 		return fmt.Errorf("banner not found")
+	}
+
+	fmt.Println("Delete successfull")
+
+	return nil
+}
+
+// Offer GET, POST, PUT and DELETE
+func PostOffer(title, subtitle, offer_id, image string, offer int, created_date, updated_date time.Time) (uint, error) {
+	// implement post logic here
+	var id uint
+
+	currentTime := time.Now()
+
+	err := DB.QueryRow("INSERT INTO offer (title, subtitle, image, offer, offer_id, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", title, subtitle, image, offer, offer_id, currentTime, currentTime).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("Post Succesful")
+
+	return id, nil
+}
+
+func GetOffer() ([]models.Offer, error) {
+	// implement get logic here
+	rows, err := DB.Query("SELECT id, title, subtitle, image,offer, offer_id, created_date, updated_date FROM offer")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var offers []models.Offer
+	for rows.Next() {
+		var offer models.Offer
+		err := rows.Scan(&offer.ID, &offer.Title, &offer.Subtitle, &offer.Image, &offer.Offer, &offer.OfferID, &offer.CreatedDate, &offer.UpdatedDate)
+		if err != nil {
+			return nil, err
+		}
+
+		offers = append(offers, offer)
+	}
+
+	fmt.Println("Get Successful")
+
+	return offers, nil
+}
+
+func PutOffer(id uint, title, subtitle, offer_id, image string, offer int, updated_date time.Time) error {
+	// Correct the placeholders in the SQL query
+	result, err := DB.Exec("UPDATE offer SET id=$1, title=$2, subtitle=$3, image=$4, offer=$5, updated_date=$6 WHERE offer_id=$7", id, title, subtitle, image, offer, updated_date, offer_id)
+	if err != nil {
+		return fmt.Errorf("failed to query Offer: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("offer not found")
+	}
+
+	fmt.Println("Update successful")
+
+	return nil
+}
+
+func DeleteOffer(offer_id string) error {
+	// implement delete logic here
+	result, err := DB.Exec("DELETE FROM offer WHERE offer_id=$1", offer_id)
+	if err != nil {
+		return fmt.Errorf("failed to query Offer: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("offer not found")
+	}
+
+	fmt.Println("Delete successfull")
+
+	return nil
+}
+
+// Address POST, GET, PUT and DELETE
+func PostAddress(address, building_type, customer_id string, created_date, updated_date time.Time) (uint, error) {
+	// implement post logic here
+	var id uint
+
+	currentTime := time.Now()
+
+	err := DB.QueryRow("INSERT INTO address (address, building_type, customer_id, created_date, updated_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", address, building_type, customer_id, currentTime, currentTime).Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("Post Successful")
+
+	return id, nil
+}
+
+func GetAddress() ([]models.Details, error) {
+	// implement get logic here
+	rows, err := DB.Query("SELECT id, address, building_type, customer_id, created_date, updated_date FROM address")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var addresses []models.Details
+	for rows.Next() {
+		var address models.Details
+		err := rows.Scan(&address.ID, &address.Address, &address.BuildingType, &address.CustomerID, &address.CreatedDate, &address.UpdatedDate)
+		if err != nil {
+			return nil, err
+		}
+		addresses = append(addresses, address)
+	}
+
+	fmt.Println("Get Successful")
+
+	return addresses, nil
+}
+
+func PutAddress(id uint, address, building_type, customer_id string, updated_date time.Time) error {
+	// implement put logic here
+	result, err := DB.Exec("UPDATE address SET address=$1, building_type=$2, customer_id=$3, updated_date=$4 WHERE id=$5", address, building_type, customer_id, updated_date, id)
+	if err != nil {
+		return fmt.Errorf("failed to query Address: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("address not found")
+	}
+
+	fmt.Println("Update successfull")
+
+	return nil
+}
+
+func DeleteAddress(id uint) error {
+	// implement delete logic here
+	result, err := DB.Exec("DELETE FROM address WHERE id=$1", id)
+	if err != nil {
+		return fmt.Errorf("failed to query Address: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to determine affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("address not found")
 	}
 
 	fmt.Println("Delete successfull")
