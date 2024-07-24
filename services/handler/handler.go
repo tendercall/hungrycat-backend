@@ -76,6 +76,41 @@ func GetCustomerHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(customer)
 }
 
+func GetCustomerHandlerById(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve customer from repository by ID
+	customer, err := repository.GetCustomerByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no customer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with customer details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(customer)
+}
+
 func PutCustomerHandler(w http.ResponseWriter, r *http.Request) {
 
 	var customer models.Customer
@@ -160,6 +195,41 @@ func GetAdminHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(admin)
+}
+
+func GetAdminHandlerById(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve admin from repository by ID
+	admin, err := repository.GetAdminByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no admin found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with admin details in JSON format
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(admin)
 }
@@ -363,6 +433,41 @@ func GetFoodHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(food)
 }
 
+func GetFoodHandlerById(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve food from repository by ID
+	food, err := repository.GetFoodByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no food found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with food details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(food)
+}
+
 func PutFoodHandler(w http.ResponseWriter, r *http.Request) {
 
 	var food models.Food
@@ -439,7 +544,7 @@ func PostRestaurantHandler(w http.ResponseWriter, r *http.Request) {
 	restaurant.Menu = r.FormValue("menu")
 	restaurant.OpenTime = r.FormValue("open_time")
 	restaurant.CloseTime = r.FormValue("close_time")
-	restaurant.Ratings, _ = strconv.Atoi(r.FormValue("ratings"))
+	restaurant.Ratings, err = strconv.ParseFloat("ratings", 64)
 
 	// Process uploaded image
 	file, _, err := r.FormFile("profile_image")
@@ -536,6 +641,41 @@ func GetRestaurantHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(restaurant)
 }
 
+func GetRestuarantHandlerById(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve restaurant from repository by ID
+	restaurant, err := repository.GetRestaurantByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no restaurant found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with restaurant details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(restaurant)
+}
+
 func PutRestaurantHandler(w http.ResponseWriter, r *http.Request) {
 
 	var restaurant models.Restaurant
@@ -628,6 +768,41 @@ func GetOrderHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(order)
 }
 
+func GetOrdeHandlerById(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve order from repository by ID
+	order, err := repository.GetOrderByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no order found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with order details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(order)
+}
+
 func PutOrderHandler(w http.ResponseWriter, r *http.Request) {
 
 	var order models.Order
@@ -707,17 +882,32 @@ func TestGetHandler(w http.ResponseWriter, r *http.Request) {
 
 func TestGetByIdHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Invalid Method", http.StatusBadRequest)
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
 
+	// Extract ID from URL query parameter
 	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
 	id, err := strconv.Atoi(idstr)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
 	}
+
+	// Retrieve test from repository by ID
 	test, err := repository.TestGetById(uint(id))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err.Error() == fmt.Sprintf("no test found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -767,6 +957,41 @@ func GetDeliveryBoyHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 	json.NewEncoder(w).Encode(deliveryBoy)
+}
+
+func GetDeliveryBoyByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve customer from repository by ID
+	delivery, err := repository.GetDeliveryBoyByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no delivery found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with delivery details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(delivery)
 }
 
 func PutDeliveryBoyHandler(w http.ResponseWriter, r *http.Request) {
@@ -942,6 +1167,41 @@ func GetCategoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(category)
+}
+
+func GetCategoryByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve category from repository by ID
+	category, err := repository.GetCategoryByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no category found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with category details in JSON format
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(category)
 }
 
@@ -1122,6 +1382,41 @@ func GetBannerHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(banner)
 }
 
+func GetBannerByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve banner from repository by ID
+	Banner, err := repository.GetBannerByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no banner found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with banner details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Banner)
+}
+
 func PutBannerHandler(w http.ResponseWriter, r *http.Request) {
 	// Extract category_id from query parameters
 	queryParams := r.URL.Query()
@@ -1299,6 +1594,41 @@ func GetOfferHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(offer)
 }
 
+func GetOfferByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idstr := r.URL.Query().Get("id")
+	if idstr == "" {
+		http.Error(w, "ID parameter is required", http.StatusBadRequest)
+		return
+	}
+
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve offer from repository by ID
+	offer, err := repository.GetOfferByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with offer details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(offer)
+}
+
 func PutOfferHandler(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
 	OfferID := queryParams.Get("offer_id")
@@ -1402,6 +1732,36 @@ func GetAddressHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(address)
 }
 
+func GetAddressByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve address from repository by ID
+	address, err := repository.GetAddressByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with address details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(address)
+}
+
 func PutAddressHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	id, err := strconv.Atoi(idStr)
@@ -1455,6 +1815,944 @@ func DeleteAddressHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			http.Error(w, fmt.Sprintf("Failed to delete Address: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Ratings Handler
+func RatingHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostRatingsHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetRatingsHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutRatingHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteRatingHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostRatingsHandler(w http.ResponseWriter, r *http.Request) {
+	var ratings models.Rating
+
+	if err := json.NewDecoder(r.Body).Decode(&ratings); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	}
+
+	id, err := repository.PostRating(ratings.Title, ratings.CustomerID, ratings.ProductId, ratings.Rating, ratings.CreatedDate, ratings.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	ratings.ID = id
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(ratings)
+}
+
+func GetRatingsHandler(w http.ResponseWriter, r *http.Request) {
+	ratings, err := repository.GetRating()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(ratings)
+}
+
+func GetRatingByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve rating from repository by ID
+	rating, err := repository.GetRatingByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with rating details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(rating)
+}
+
+func PutRatingHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var rating models.Rating
+	if err := json.NewDecoder(r.Body).Decode(&rating); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the offer_id from the query parameter
+	rating.ID = uint(id)
+
+	// Set the updated date to the current time
+	rating.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err = repository.PutRating(rating.ID, rating.Title, rating.CustomerID, rating.ProductId, rating.Rating, rating.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Rating not found" {
+			http.Error(w, "Rating not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update rating: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(rating); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteRatingHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err = repository.DeleteRating(uint(id))
+	if err != nil {
+		if err.Error() == "Rating not found" {
+			http.Error(w, "Rating not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update rating: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Cart Handler
+func CartHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostCartHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetCartHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutCartHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteCartHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostCartHandler(w http.ResponseWriter, r *http.Request) {
+	var cart models.Cart
+
+	if err := json.NewDecoder(r.Body).Decode(&cart); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	}
+
+	id, err := repository.PostCart(cart.ProductID, cart.CustomerID, cart.Discount, cart.Quantity, cart.OrderDate, cart.CreatedDate, cart.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	cart.ID = id
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(cart)
+}
+
+func GetCartHandler(w http.ResponseWriter, r *http.Request) {
+	cart, err := repository.GetCart()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(cart)
+}
+
+func GetCartByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve cart from repository by ID
+	cart, err := repository.GetCartByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with cart details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(cart)
+}
+
+func PutCartHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var cart models.Cart
+	if err := json.NewDecoder(r.Body).Decode(&cart); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the offer_id from the query parameter
+	cart.ID = uint(id)
+
+	// Set the updated date to the current time
+	cart.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err = repository.PutCart(cart.ID, cart.ProductID, cart.CustomerID, cart.Discount, cart.Quantity, cart.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Cart not found" {
+			http.Error(w, "Cart not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Cart: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(cart); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteCartHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err = repository.DeleteCart(uint(id))
+	if err != nil {
+		if err.Error() == "Cart not found" {
+			http.Error(w, "Cart not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Cart: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Cart Handler
+func CancelHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostCancelHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetCancelHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutCancelHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteCancelHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostCancelHandler(w http.ResponseWriter, r *http.Request) {
+	var cancel models.Cancel
+
+	if err := json.NewDecoder(r.Body).Decode(&cancel); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	}
+
+	id, err := repository.PostCancel(cancel.ProductID, cancel.CancelReason, cancel.OtherReason, cancel.CustomerID, cancel.CancelledDate, cancel.CreatedDate, cancel.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	cancel.ID = id
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(cancel)
+}
+
+func GetCancelHandler(w http.ResponseWriter, r *http.Request) {
+	cancel, err := repository.GetCancel()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(cancel)
+}
+
+func GetCancelByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve cancel from repository by ID
+	cancel, err := repository.GetCancelByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with cancel details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(cancel)
+}
+
+func PutCancelHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var cancel models.Cancel
+	if err := json.NewDecoder(r.Body).Decode(&cancel); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the id from the query parameter
+	cancel.ID = uint(id)
+
+	// Set the updated date to the current time
+	cancel.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err = repository.PutCancel(cancel.ID, cancel.ProductID, cancel.CancelReason, cancel.OtherReason, cancel.CustomerID, cancel.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Cancelled order not found" {
+			http.Error(w, "Cancelled order not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Cancelled order: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(cancel); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteCancelHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err = repository.DeleteCancel(uint(id))
+	if err != nil {
+		if err.Error() == "Cancelled order not found" {
+			http.Error(w, "Cancelled order not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Cancelled order: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Chat Handler
+func ChatHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostChatHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetChatHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutChatHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteChatHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostChatHandler(w http.ResponseWriter, r *http.Request) {
+	var chat models.Chat
+
+	if err := json.NewDecoder(r.Body).Decode(&chat); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	}
+
+	id, err := repository.PostChat(chat.Message, chat.CustomerID, chat.DbID, chat.ProductID, chat.OrderID, chat.HotelId, chat.IsActive, chat.CreatedDate, chat.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	chat.ID = id
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(chat)
+}
+
+func GetChatHandler(w http.ResponseWriter, r *http.Request) {
+	chat, err := repository.GetChat()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(chat)
+}
+
+func GetChatByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve chat from repository by ID
+	chat, err := repository.GetChatByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with chat details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(chat)
+}
+
+func PutChatHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var chat models.Chat
+	if err := json.NewDecoder(r.Body).Decode(&chat); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the id from the query parameter
+	chat.ID = uint(id)
+
+	// Set the updated date to the current time
+	chat.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err = repository.PutChat(chat.ID, chat.Message, chat.CustomerID, chat.DbID, chat.ProductID, chat.OrderID, chat.HotelId, chat.IsActive, chat.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Chat not found" {
+			http.Error(w, "Chat not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Chat: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(chat); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteChatHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err = repository.DeleteChat(uint(id))
+	if err != nil {
+		if err.Error() == "Chat not found" {
+			http.Error(w, "Chat not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Chat: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Payment method
+func PaymentHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostPaymentHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetPaymentHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutPaymentHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeletePaymentHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostPaymentHandler(w http.ResponseWriter, r *http.Request) {
+	var payment models.Payment
+
+	if err := json.NewDecoder(r.Body).Decode(&payment); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	}
+
+	id, err := repository.PostPayment(payment.OrderID, payment.ProductID, payment.HotelId, payment.CustomerID, payment.DbID, payment.PaymentMethod, payment.Amount, payment.CreatedDate, payment.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	payment.ID = id
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(payment)
+}
+
+func GetPaymentHandler(w http.ResponseWriter, r *http.Request) {
+	payment, err := repository.GetPayment()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(payment)
+}
+
+func GetPaymentByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve payment from repository by ID
+	payment, err := repository.GetPaymentByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with payment details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(payment)
+}
+
+func PutPaymentHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var payment models.Payment
+	if err := json.NewDecoder(r.Body).Decode(&payment); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the id from the query parameter
+	payment.ID = uint(id)
+
+	// Set the updated date to the current time
+	payment.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err = repository.PutPayment(payment.ID, payment.OrderID, payment.ProductID, payment.HotelId, payment.CustomerID, payment.DbID, payment.PaymentMethod, payment.Amount, payment.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Payment not found" {
+			http.Error(w, "Payment not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update payment: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(payment); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeletePaymentHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err = repository.DeletePayment(uint(id))
+	if err != nil {
+		if err.Error() == "Payment not found" {
+			http.Error(w, "Payment not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update payment: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Support Handler
+func SupportHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostSupportHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetSupportHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutSupportHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteSupportHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostSupportHandler(w http.ResponseWriter, r *http.Request) {
+	var support models.Support
+
+	if err := json.NewDecoder(r.Body).Decode(&support); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	}
+
+	id, err := repository.PostSupport(support.Message, support.CustomerID, support.CreatedDate, support.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	support.ID = id
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(support)
+}
+
+func GetSupportHandler(w http.ResponseWriter, r *http.Request) {
+	support, err := repository.GetSupport()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(support)
+}
+
+func GetSupportByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve support from repository by ID
+	support, err := repository.GetPaymentByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with support details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(support)
+}
+
+func PutSupportHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var support models.Support
+	if err := json.NewDecoder(r.Body).Decode(&support); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the id from the query parameter
+	support.ID = uint(id)
+
+	// Set the updated date to the current time
+	support.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err = repository.PutSupport(support.ID, support.Message, support.CustomerID, support.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Support not found" {
+			http.Error(w, "Support not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Support: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(support); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteSupportHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err = repository.DeleteSupport(uint(id))
+	if err != nil {
+		if err.Error() == "Support not found" {
+			http.Error(w, "Support not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update support: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// Log Handler
+func LogHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		PostLogHandler(w, r)
+	} else if r.Method == http.MethodGet {
+		GetLogHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		PutLogHandler(w, r)
+	} else if r.Method == http.MethodDelete {
+		DeleteLogHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
+func PostLogHandler(w http.ResponseWriter, r *http.Request) {
+	var log models.Logs
+
+	if err := json.NewDecoder(r.Body).Decode(&log); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	}
+
+	id, err := repository.PostLog(log.Functions, log.LogMessage, log.CustomerID, log.DeviceID, log.CreatedDate, log.UpdatedDate)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	log.ID = id
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(log)
+}
+
+func GetLogHandler(w http.ResponseWriter, r *http.Request) {
+	log, err := repository.GetSupport()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(log)
+}
+
+func GetLogByIdHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Extract ID from URL query parameter
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	// Retrieve support from repository by ID
+	log, err := repository.GetLogByID(uint(id))
+	if err != nil {
+		if err.Error() == fmt.Sprintf("no log found with id %d", id) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Respond with support details in JSON format
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(log)
+}
+
+func PutLogHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	var log models.Logs
+	if err := json.NewDecoder(r.Body).Decode(&log); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Set the id from the query parameter
+	log.ID = uint(id)
+
+	// Set the updated date to the current time
+	log.UpdatedDate = time.Now()
+
+	// Update the Offer in the repository
+	err = repository.PutLog(log.ID, log.Functions, log.LogMessage, log.CustomerID, log.DeviceID, log.UpdatedDate)
+	if err != nil {
+		if err.Error() == "Log not found" {
+			http.Error(w, "Log not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update log: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(log); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func DeleteLogHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	err = repository.DeleteLog(uint(id))
+	if err != nil {
+		if err.Error() == "Log not found" {
+			http.Error(w, "Log not found", http.StatusNotFound)
+			return
+		} else {
+			http.Error(w, fmt.Sprintf("Failed to update Log: %v", err), http.StatusInternalServerError)
 			return
 		}
 	}

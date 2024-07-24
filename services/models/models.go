@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Customer struct {
 	ID           uint      `json:"id"`
@@ -57,7 +59,7 @@ type Restaurant struct {
 	ProfileImage string    `json:"profile_image"`
 	OpenTime     string    `json:"open_time"`
 	CloseTime    string    `json:"close_time"`
-	Ratings      int       `json:"ratings"`
+	Ratings      float64   `json:"ratings"`
 	CreatedDate  time.Time `json:"created_date"`
 	UpdatedDate  time.Time `json:"updated_date"`
 }
@@ -135,4 +137,80 @@ type Details struct {
 	CustomerID   string    `json:"customer_id"`
 	CreatedDate  time.Time `json:"created_date"`
 	UpdatedDate  time.Time `json:"updated_date"`
+}
+
+type Rating struct {
+	ID          uint      `json:"id"`
+	Title       string    `json:"title"`
+	Rating      float64   `json:"rating"`
+	CustomerID  string    `json:"customer_id"`
+	ProductId   string    `json:"product_id"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+}
+
+type Cart struct {
+	ID          uint      `json:"id"`
+	ProductID   string    `json:"product_id"`
+	Quantity    int       `json:"quantity"`
+	CustomerID  string    `json:"customer_id"`
+	Discount    string    `json:"discount"`
+	OrderDate   time.Time `json:"order_date"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+}
+
+type Cancel struct {
+	ID            uint      `json:"id"`
+	ProductID     string    `json:"product_id"`
+	CancelReason  string    `json:"cancel_reason"`
+	OtherReason   string    `json:"other_reason"`
+	CustomerID    string    `json:"customer_id"`
+	CancelledDate time.Time `json:"cancelled_date"`
+	CreatedDate   time.Time `json:"created_date"`
+	UpdatedDate   time.Time `json:"updated_date"`
+}
+
+type Chat struct {
+	ID          uint      `json:"id"`
+	Message     string    `json:"message"`
+	CustomerID  string    `json:"customer_id"`
+	DbID        string    `json:"db_id"`
+	ProductID   string    `json:"product_id"`
+	OrderID     string    `json:"order_id"`
+	HotelId     string    `json:"hotel_id"`
+	IsActive    string    `json:"is_active"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+}
+
+type Payment struct {
+	ID            uint      `json:"id"`
+	ProductID     string    `json:"product_id"`
+	OrderID       string    `json:"order_id"`
+	HotelId       string    `json:"hotel_id"`
+	CustomerID    string    `json:"customer_id"`
+	DbID          string    `json:"db_id"`
+	Amount        int       `json:"amount"`
+	PaymentMethod string    `json:"payment_method"`
+	CreatedDate   time.Time `json:"created_date"`
+	UpdatedDate   time.Time `json:"updated_date"`
+}
+
+type Support struct {
+	ID          uint      `json:"id"`
+	Message     string    `json:"message"`
+	CustomerID  string    `json:"customer_id"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
+}
+
+type Logs struct {
+	ID          uint      `json:"id"`
+	Functions   string    `json:"functions"`
+	LogMessage  string    `json:"log_message"`
+	CustomerID  string    `json:"customer_id"`
+	DeviceID    string    `json:"device_id"`
+	CreatedDate time.Time `json:"created_date"`
+	UpdatedDate time.Time `json:"updated_date"`
 }

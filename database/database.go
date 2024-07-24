@@ -34,11 +34,12 @@ func Initdb() {
 	}
 	fmt.Println("Database connection established")
 
-	// createTable := `CREATE TABLE IF NOT EXISTS address (
+	// createTable := `CREATE TABLE IF NOT EXISTS logs (
 	// id SERIAL PRIMARY KEY,
-	// address VARCHAR(256),
-	// building_type VARCHAR(256),
+	// function VARCHAR(256),
+	// log_message VARCHAR(256),
 	// customer_id VARCHAR(256),
+	// device_id VARCHAR(256),
 	// created_date TIMESTAMP NOT NULL DEFAULT NOW(),
 	// updated_date TIMESTAMP NOT NULL DEFAULT NOW()
 	// )`
@@ -49,17 +50,18 @@ func Initdb() {
 	// }
 	// fmt.Println("Table created successfully")
 
-	// Example ALTER TABLE statement to add a new column
-	// query := `
-	// 	ALTER TABLE banner
-	// 	ADD COLUMN discount INTEGER;
-	// `
+	//Example ALTER TABLE statement to add a new column
+	// 	query := `
+	// 		ALTER TABLE rating
+	// 		ALTER COLUMN rating INTEGER;
+	// 	`
 
-	// // Execute the ALTER TABLE statement
-	// _, err = repository.DB.Exec(query)
-	// if err != nil {
-	// 	log.Fatalf("Error executing ALTER TABLE statement: %v\n", err)
+	// 	// Execute the ALTER TABLE statement
+	// 	_, err = repository.DB.Exec(query)
+	// 	if err != nil {
+	// 		log.Fatalf("Error executing ALTER TABLE statement: %v\n", err)
+	// 	}
+
+	// 	fmt.Println("Column added successfully.")
 	// }
-
-	// fmt.Println("Column added successfully.")
 }
