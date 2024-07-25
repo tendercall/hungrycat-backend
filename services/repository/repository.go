@@ -1305,7 +1305,7 @@ func PostChat(message, customer_id, db_id, product_id, order_id, hotel_id, is_ac
 
 	currentTime := time.Now()
 
-	err := DB.QueryRow("INSERT INTO chat (message, customer_id, db_id, product_id, order_id, hotel_id, is_active, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id", message, customer_id, db_id, product_id, order_id, hotel_id, is_active, currentTime, currentTime).Scan(&id)
+	err := DB.QueryRow("INSERT INTO chats (message, customer_id, db_id, product_id, order_id, hotel_id, is_active, created_date, updated_date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id", message, customer_id, db_id, product_id, order_id, hotel_id, is_active, currentTime, currentTime).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -1317,7 +1317,7 @@ func PostChat(message, customer_id, db_id, product_id, order_id, hotel_id, is_ac
 
 func GetChat() ([]models.Chat, error) {
 	// implement get logic here
-	rows, err := DB.Query("SELECT id, message, customer_id, db_id, product_id, order_id, hotel_id, is_active, created_date, updated_date FROM chat")
+	rows, err := DB.Query("SELECT id, message, customer_id, db_id, product_id, order_id, hotel_id, is_active, created_date, updated_date FROM chats")
 	if err != nil {
 		return nil, err
 	}
@@ -1341,7 +1341,7 @@ func GetChat() ([]models.Chat, error) {
 func GetChatByID(id uint) (*models.Chat, error) {
 	var chat models.Chat
 
-	err := DB.QueryRow("SELECT id, message, customer_id, db_id, product_id, order_id, hotel_id, is_active, created_date, updated_date FROM chat WHERE id = $1", id).Scan(&chat.ID, &chat.Message, &chat.CustomerID, &chat.DbID, &chat.ProductID, &chat.OrderID, &chat.HotelId, &chat.IsActive, &chat.CreatedDate, &chat.UpdatedDate)
+	err := DB.QueryRow("SELECT id, message, customer_id, db_id, product_id, order_id, hotel_id, is_active, created_date, updated_date FROM chats WHERE id = $1", id).Scan(&chat.ID, &chat.Message, &chat.CustomerID, &chat.DbID, &chat.ProductID, &chat.OrderID, &chat.HotelId, &chat.IsActive, &chat.CreatedDate, &chat.UpdatedDate)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -1356,7 +1356,7 @@ func GetChatByID(id uint) (*models.Chat, error) {
 
 func PutChat(id uint, message, customer_id, db_id, product_id, order_id, hotel_id, is_active string, updated_date time.Time) error {
 	// implement put logic here
-	result, err := DB.Exec("UPDATE chat SET message=$1, customer_id=$2, db_id=$3, product_id=$4, order_id=$5, hotel_id=$6, is_active=$7, updated_date=$8 WHERE id=$9", message, customer_id, db_id, product_id, order_id, hotel_id, is_active, time.Now(), id)
+	result, err := DB.Exec("UPDATE chats SET message=$1, customer_id=$2, db_id=$3, product_id=$4, order_id=$5, hotel_id=$6, is_active=$7, updated_date=$8 WHERE id=$9", message, customer_id, db_id, product_id, order_id, hotel_id, is_active, time.Now(), id)
 	if err != nil {
 		return fmt.Errorf("failed to query chat: %w", err)
 	}
@@ -1377,7 +1377,7 @@ func PutChat(id uint, message, customer_id, db_id, product_id, order_id, hotel_i
 
 func DeleteChat(id uint) error {
 	// implement delete logic here
-	result, err := DB.Exec("DELETE FROM chat WHERE id=$1", id)
+	result, err := DB.Exec("DELETE FROM chats WHERE id=$1", id)
 	if err != nil {
 		return fmt.Errorf("failed to query chat: %w", err)
 	}
@@ -1620,7 +1620,7 @@ func GetLog() ([]models.Logs, error) {
 	var Logs []models.Logs
 	for rows.Next() {
 		var Log models.Logs
-		err = rows.Scan(&Log.ID, &Log.LogMessage, &Log.CustomerID, &Log.DeviceID, &Log.CreatedDate, &Log.UpdatedDate)
+		err = rows.Scan(&Log.ID, &Log.Functions, &Log.LogMessage, &Log.CustomerID, &Log.DeviceID, &Log.CreatedDate, &Log.UpdatedDate)
 		if err != nil {
 			return nil, err
 		}
@@ -1635,7 +1635,7 @@ func GetLog() ([]models.Logs, error) {
 func GetLogByID(id uint) (*models.Logs, error) {
 	var Log models.Logs
 
-	err := DB.QueryRow("SELECT id, function, log_message, customer_id, device_id, created_date, updated_date FROM logs WHERE id = $1", id).Scan(&Log.ID, &Log.LogMessage, &Log.CustomerID, &Log.DeviceID, &Log.CreatedDate, &Log.UpdatedDate)
+	err := DB.QueryRow("SELECT id, function, log_message, customer_id, device_id, created_date, updated_date FROM logs WHERE id = $1", id).Scan(&Log.ID, &Log.Functions, &Log.LogMessage, &Log.CustomerID, &Log.DeviceID, &Log.CreatedDate, &Log.UpdatedDate)
 
 	if err != nil {
 		if err == sql.ErrNoRows {

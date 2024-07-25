@@ -207,7 +207,7 @@ type Support struct {
 
 type Logs struct {
 	ID          uint      `json:"id"`
-	Functions   string    `json:"functions"`
+	Functions   string    `json:"function"`
 	LogMessage  string    `json:"log_message"`
 	CustomerID  string    `json:"customer_id"`
 	DeviceID    string    `json:"device_id"`

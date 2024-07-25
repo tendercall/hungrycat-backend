@@ -2551,7 +2551,7 @@ func GetSupportByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Retrieve support from repository by ID
-	support, err := repository.GetPaymentByID(uint(id))
+	support, err := repository.GetSupportByID(uint(id))
 	if err != nil {
 		if err.Error() == fmt.Sprintf("no offer found with id %d", id) {
 			http.Error(w, err.Error(), http.StatusNotFound)
@@ -2661,7 +2661,7 @@ func PostLogHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetLogHandler(w http.ResponseWriter, r *http.Request) {
-	log, err := repository.GetSupport()
+	log, err := repository.GetLog()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
